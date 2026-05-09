@@ -12,6 +12,15 @@ on:
         required: false
         default: "b"
         type: string
+      playlist_mode:
+        description: "Playlist behavior: auto, single item only, or full playlist"
+        required: false
+        default: "auto"
+        type: choice
+        options:
+          - "auto"
+          - "single"
+          - "playlist"
 
 jobs:
   download:
@@ -67,6 +76,7 @@ jobs:
         env:
           INPUT_URL: ${{ inputs.url }}
           INPUT_FORMAT: ${{ inputs.format }}
+          INPUT_PLAYLIST_MODE: ${{ inputs.playlist_mode }}
         run: |
           set -euo pipefail
           mkdir -p downloads
@@ -77,7 +87,23 @@ jobs:
             --extractor-args "youtube:player_client=ios,web,mweb"
             --js-runtimes "node"
             -f "${INPUT_FORMAT}"
+            --abort-on-error
           )
+
+          case "${INPUT_PLAYLIST_MODE}" in
+            single)
+              YTDLP_ARGS+=(--no-playlist)
+              ;;
+            playlist)
+              YTDLP_ARGS+=(--yes-playlist)
+              ;;
+            auto)
+              ;;
+            *)
+              echo "Invalid playlist_mode: ${INPUT_PLAYLIST_MODE}" >&2
+              exit 2
+              ;;
+          esac
 
           if [[ "${{ steps.cookies.outputs.use_cookies }}" == "true" ]]; then
             YTDLP_ARGS+=(--cookies "cookies.txt")

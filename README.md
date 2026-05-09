@@ -79,6 +79,10 @@ You can run a manual workflow in GitHub and download the result directly from **
 6. Fill in:
    - `url` (required): the video/page URL you want to download
    - `format` (optional): yt-dlp format selector (default is `b`)
+   - `playlist_mode` (optional):
+     - `auto` (default): let yt-dlp detect automatically
+     - `single`: force single item only
+     - `playlist`: force full playlist download
 7. Click **Run workflow** to start.
 
 ### How to download the result
