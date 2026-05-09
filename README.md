@@ -1,6 +1,15 @@
 # yt-remote-downloader
 
-## 🚀 Open the Repository in GitHub Codespaces
+## 2 Options
+
+1. [Codespaces (No Fork)](#codespaces-no-fork)
+2. [GitHub Actions (Fork Required)](#github-actions-run)
+
+<a id="codespaces-no-fork"></a>
+
+## 🚀 Option 1: GitHub Codespaces (No Fork)
+
+### Open the Repository in GitHub Codespaces
 
 1. Go to the repository on GitHub  
 2. Click the green **Code** button  
@@ -13,7 +22,7 @@ Or open an existing Codespace if one is already available.
 
 ---
 
-## 💻 Working in VS Code
+### Working in VS Code
 
 Once the Codespace is ready:
 - VS Code will open (in your browser or desktop)
@@ -21,9 +30,9 @@ Once the Codespace is ready:
 
 ---
 
-## ⬇️ Download Videos from YouTube
+### Download Videos from YouTube
 
-### Install `yt-dlp`:
+#### Install `yt-dlp`:
 ```bash
 pip install yt-dlp
 
@@ -42,7 +51,7 @@ yt-dlp \
 
 ---
 
-## 📥 Download the File to Your Computer
+### Download the File to Your Computer
 
 1. Locate the downloaded file in the VS Code file explorer
 2. Right-click the file
@@ -50,7 +59,9 @@ yt-dlp \
 
 ---
 
-## ⚙️ Download via GitHub Actions (No Codespace Needed)
+<a id="github-actions-run"></a>
+
+## ⚙️ Option 2: GitHub Actions (Fork Required)
 
 You can run a manual workflow in GitHub and download the result directly from **Artifacts**.
 
