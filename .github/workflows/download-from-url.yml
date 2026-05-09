@@ -1,0 +1,88 @@
+name: Download from URL
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "URL to download"
+        required: true
+        type: string
+      format:
+        description: "yt-dlp format selector (example: b, bv*+ba/b)"
+        required: false
+        default: "b"
+        type: string
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install yt-dlp
+        run: python -m pip install --upgrade pip yt-dlp
+
+      - name: Prepare optional cookies from secret
+        id: cookies
+        shell: bash
+        env:
+          YTDLP_COOKIES: ${{ secrets.YTDLP_COOKIES }}
+        run: |
+          set -euo pipefail
+
+          if [[ -n "${YTDLP_COOKIES:-}" ]]; then
+            printf '%s\n' "${YTDLP_COOKIES}" > cookies.txt
+            chmod 600 cookies.txt
+            echo "use_cookies=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "use_cookies=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Download file
+        id: download
+        shell: bash
+        env:
+          INPUT_URL: ${{ inputs.url }}
+          INPUT_FORMAT: ${{ inputs.format }}
+        run: |
+          set -euo pipefail
+          mkdir -p downloads
+
+          YTDLP_ARGS=(
+            --paths "downloads"
+            --remote-components "ejs:github"
+            --extractor-args "youtube:player_client=ios,web,mweb"
+            --js-runtimes "node"
+            -f "${INPUT_FORMAT}"
+          )
+
+          if [[ "${{ steps.cookies.outputs.use_cookies }}" == "true" ]]; then
+            YTDLP_ARGS+=(--cookies "cookies.txt")
+          fi
+
+          downloaded_path="$(yt-dlp "${YTDLP_ARGS[@]}" --print "after_move:filepath" "${INPUT_URL}" | tail -n 1)"
+
+          if [[ -z "${downloaded_path}" || ! -f "${downloaded_path}" ]]; then
+            echo "Could not detect downloaded file path." >&2
+            exit 1
+          fi
+
+          echo "downloaded_path=${downloaded_path}" >> "$GITHUB_OUTPUT"
+          echo "Downloaded file: ${downloaded_path}" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload downloadable artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: downloaded-file-${{ github.run_number }}
+          path: downloads/
+          if-no-files-found: error
+          retention-days: 7
