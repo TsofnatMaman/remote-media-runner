@@ -111,3 +111,158 @@ You can run a manual workflow in GitHub and download the result directly from **
 4. Save
 
 The workflow will automatically use these secrets if they exist (`YTDLP_COOKIES_B64` is preferred when both exist).
+
+# GitHub Codespaces + GUI Browser Setup
+
+## 1. Open a new Codespace
+
+Open your repository in GitHub Codespaces.
+
+---
+
+## 2. Install Desktop + noVNC
+
+Run in the VS Code terminal:
+
+```bash
+sudo apt-get update
+
+sudo apt-get install -y \
+xfce4 xfce4-goodies \
+novnc websockify \
+x11vnc xvfb \
+dbus-x11 \
+unzip wget
+```
+
+---
+
+## 3. Download Chromium
+
+Run:
+
+```bash
+wget "https://download-chromium.appspot.com/dl/Linux_x64?type=snapshots" -O chromium.zip
+
+unzip chromium.zip
+
+chmod +x chrome-linux/chrome
+```
+
+---
+
+## 4. Create VNC Password
+
+Run:
+
+```bash
+mkdir -p ~/.vnc
+
+x11vnc -storepasswd
+```
+
+Choose a password.
+
+---
+
+## 5. Start Desktop Environment
+
+Run:
+
+```bash
+Xvfb :1 -screen 0 1920x1080x24 &
+export DISPLAY=:1
+
+dbus-launch startxfce4 &
+```
+
+---
+
+## 6. Start VNC Server
+
+Run:
+
+```bash
+x11vnc -display :1 -forever -usepw -rfbport 5900 &
+```
+
+---
+
+## 7. Start noVNC Web Client
+
+Run:
+
+```bash
+websockify --web=/usr/share/novnc/ 6080 localhost:5900
+```
+
+---
+
+## 8. Open the Desktop
+
+In VS Code:
+
+1. Open the **Ports** tab
+2. Find port `6080`
+3. Click **Open in Browser**
+
+Open:
+
+```txt
+http://localhost:6080/vnc.html
+```
+
+Press:
+
+```txt
+Connect
+```
+
+Enter your VNC password.
+
+You should now see a full Linux desktop running inside GitHub Codespaces.
+
+---
+
+## 9. Launch Chromium GUI Browser
+
+Inside the Desktop terminal:
+
+```bash
+cd /workspaces/YOUR_PROJECT_NAME
+```
+
+Run Chromium:
+
+```bash
+./chrome-linux/chrome \
+  --no-sandbox \
+  --disable-dev-shm-usage \
+  --disable-gpu \
+  --user-data-dir=/tmp/chrome-vnc
+```
+
+---
+
+## Notes
+
+### If the browser crashes
+
+Run with the exact flags above.
+
+The important flag is:
+
+```bash
+--disable-dev-shm-usage
+```
+
+---
+
+## Result
+
+You now have:
+
+* Full GUI desktop
+* Chromium browser
+* Browser traffic running through the GitHub Codespace server
+* Remote Linux environment accessible from VS Code
