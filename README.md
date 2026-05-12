@@ -118,8 +118,6 @@ The workflow will automatically use these secrets if they exist (`YTDLP_COOKIES_
 
 Open your repository in GitHub Codespaces.
 
----
-
 ## 2. Install Desktop + noVNC
 
 Run in the VS Code terminal:
@@ -135,21 +133,15 @@ dbus-x11 \
 unzip wget
 ```
 
----
-
 ## 3. Download Chromium
 
 Run:
 
 ```bash
 wget "https://download-chromium.appspot.com/dl/Linux_x64?type=snapshots" -O chromium.zip
-
 unzip chromium.zip
-
 chmod +x chrome-linux/chrome
 ```
-
----
 
 ## 4. Create VNC Password
 
@@ -157,13 +149,9 @@ Run:
 
 ```bash
 mkdir -p ~/.vnc
-
 x11vnc -storepasswd
 ```
-
 Choose a password.
-
----
 
 ## 5. Start Desktop Environment
 
@@ -176,8 +164,6 @@ export DISPLAY=:1
 dbus-launch startxfce4 &
 ```
 
----
-
 ## 6. Start VNC Server
 
 Run:
@@ -186,8 +172,6 @@ Run:
 x11vnc -display :1 -forever -usepw -rfbport 5900 &
 ```
 
----
-
 ## 7. Start noVNC Web Client
 
 Run:
@@ -195,8 +179,6 @@ Run:
 ```bash
 websockify --web=/usr/share/novnc/ 6080 localhost:5900
 ```
-
----
 
 ## 8. Open the Desktop
 
@@ -222,14 +204,12 @@ Enter your VNC password.
 
 You should now see a full Linux desktop running inside GitHub Codespaces.
 
----
-
 ## 9. Launch Chromium GUI Browser
 
 Inside the Desktop terminal:
 
 ```bash
-cd /workspaces/YOUR_PROJECT_NAME
+cd /workspaces/yt-remote-downloader
 ```
 
 Run Chromium:
@@ -241,22 +221,6 @@ Run Chromium:
   --disable-gpu \
   --user-data-dir=/tmp/chrome-vnc
 ```
-
----
-
-## Notes
-
-### If the browser crashes
-
-Run with the exact flags above.
-
-The important flag is:
-
-```bash
---disable-dev-shm-usage
-```
-
----
 
 ## Result
 
